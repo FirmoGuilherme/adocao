@@ -1,0 +1,53 @@
+
+services:
+  db:
+    image: postgres:16
+    container_name: adocao_db
+    environment:
+      POSTGRES_USER: adocao_user
+      POSTGRES_PASSWORD: adocao_password
+      POSTGRES_DB: adocao_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - adocao_final_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U adocao_user -d adocao_db"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: adocao_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8001:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://adocao_user:adocao_password@db:5432/adocao_db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: adocao_frontend
+    command: npx ng serve --host 0.0.0.0 --disable-host-check
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+
+volumes:
+  adocao_final_data:
