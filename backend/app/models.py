@@ -1,6 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey, DateTime, Text
-from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey, Text
 from .database import Base
 
 class User(Base):
@@ -38,3 +36,14 @@ class Pet(Base):
     apartment_friendly = Column(Boolean, default=False)
     first_time_owner_friendly = Column(Boolean, default=False)
     image_url = Column(String, nullable=True)
+
+
+class AdoptionApplication(Base):
+    __tablename__ = "applications"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    pet_id = Column(Integer, ForeignKey("pets.id"))
+    status = Column(String, default="New")  # New, Screening, Interview, Approved, Rejected
+    housing_type = Column(String)
+    motivation = Column(Text)
+    compatibility_score = Column(Float, default=85.0)

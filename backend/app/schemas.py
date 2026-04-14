@@ -44,3 +44,16 @@ class PetCreate(PetBase):
 class Pet(PetBase):
     id: int
     model_config = ConfigDict(from_attributes=True)
+
+
+class ApplicationCreate(BaseModel):
+    user_id: int
+    pet_id: int
+    housing_type: str
+    motivation: str
+
+class ApplicationResponse(ApplicationCreate):
+    id: int
+    status: str
+    compatibility_score: float
+    model_config = ConfigDict(from_attributes=True)

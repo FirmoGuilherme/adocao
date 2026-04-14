@@ -48,6 +48,9 @@ import { PetService, Pet } from '../../core/services/pet.service';
                 <span class="badge bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm">
                   🏢 {{pet.shelter_name}}
                 </span>
+                <span class="badge bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm">
+                  📍 {{pet.city}}
+                </span>
               </div>
 
               <a routerLink="/apply/{{pet.id}}" class="w-full btn-primary text-center text-lg py-4 shadow-float hover:-translate-y-1 transform transition">
@@ -141,6 +144,7 @@ import { PetService, Pet } from '../../core/services/pet.service';
                     <li *ngIf="pet.good_with_dogs" class="flex items-center space-x-2"><span class="text-green-500">✓</span><span>Other Dogs</span></li>
                     <li *ngIf="pet.good_with_cats" class="flex items-center space-x-2"><span class="text-green-500">✓</span><span>Cats</span></li>
                     <li *ngIf="pet.apartment_friendly" class="flex items-center space-x-2"><span class="text-green-500">✓</span><span>Apartments</span></li>
+                    <li *ngIf="pet.first_time_owner_friendly" class="flex items-center space-x-2"><span class="text-green-500">✓</span><span>First-time owners</span></li>
                   </ul>
                 </div>
                 <div class="bg-orange-50 p-6 rounded-xl border border-orange-100">
@@ -179,7 +183,13 @@ import { PetService, Pet } from '../../core/services/pet.service';
         </div>
       </div>
     </div>
-    <div *ngIf="!pet && !loading" class="min-h-screen flex items-center justify-center">
+    <div *ngIf="errorMessage" class="min-h-screen flex items-center justify-center">
+      <div class="text-center">
+        <h2 class="text-2xl text-red-500 mb-2">Error loading pet</h2>
+        <p class="text-gray-500">{{errorMessage}}</p>
+      </div>
+    </div>
+    <div *ngIf="!pet && !loading && !errorMessage" class="min-h-screen flex items-center justify-center">
       <h2 class="text-2xl text-gray-500">Pet not found.</h2>
     </div>
   `,
@@ -196,6 +206,7 @@ import { PetService, Pet } from '../../core/services/pet.service';
 export class PetDetailsComponent implements OnInit {
   pet: Pet | null = null;
   loading = true;
+  errorMessage: string | null = null;
   activeTab = 'overview'; // overview, health, home, shelter
 
   constructor(
@@ -214,6 +225,7 @@ export class PetDetailsComponent implements OnInit {
           },
           error: err => {
             console.error('Failed to load pet', err);
+            this.errorMessage = 'Failed to load pet details. Please try again.';
             this.loading = false;
           }
         });

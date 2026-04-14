@@ -27,6 +27,14 @@ def get_pets(
     
     return query.offset(skip).limit(limit).all()
 
+@router.post("/", response_model=schemas.Pet, status_code=201)
+def create_pet(pet: schemas.PetCreate, db: Session = Depends(get_db)):
+    db_pet = models.Pet(**pet.model_dump())
+    db.add(db_pet)
+    db.commit()
+    db.refresh(db_pet)
+    return db_pet
+
 @router.get("/{pet_id}", response_model=schemas.Pet)
 def get_pet(pet_id: int, db: Session = Depends(get_db)):
     pet = db.query(models.Pet).filter(models.Pet.id == pet_id).first()

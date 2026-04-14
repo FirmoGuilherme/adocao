@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: adocao_password
       POSTGRES_DB: adocao_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - adocao_final_data:/var/lib/postgresql/data
     healthcheck:
