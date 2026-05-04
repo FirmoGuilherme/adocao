@@ -32,8 +32,17 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(email: string): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/login?email=${email}`, {}).pipe(
+  login(email: string, password: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap(user => {
+        localStorage.setItem('adocao_user', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      })
+    );
+  }
+
+  signup(payload: { name: string; email: string; password: string; city: string; state: string; role: string }): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/signup`, payload).pipe(
       tap(user => {
         localStorage.setItem('adocao_user', JSON.stringify(user));
         this.currentUserSubject.next(user);

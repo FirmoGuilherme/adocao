@@ -42,6 +42,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/dashboards/shelter-dashboard.component').then(m => m.ShelterDashboardComponent)
   },
   {
+    path: 'dashboard/shelter/add-pet',
+    loadComponent: () => import('./pages/add-pet/add-pet.component').then(m => m.AddPetComponent)
+  },
+  {
     path: 'dashboard/admin',
     loadComponent: () => import('./pages/dashboards/admin-dashboard.component').then(m => m.AdminDashboardComponent)
   }

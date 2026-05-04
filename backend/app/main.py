@@ -24,10 +24,19 @@ app.include_router(applications.router)
 def on_startup():
     import time
     from sqlalchemy.exc import OperationalError
+    from sqlalchemy import text, inspect
     max_retries = 5
     for i in range(max_retries):
         try:
-            models.Base.metadata.create_all(bind=get_engine())
+            engine = get_engine()
+            models.Base.metadata.create_all(bind=engine)
+            # Add password_hash column if missing (lightweight migration)
+            inspector = inspect(engine)
+            columns = [c["name"] for c in inspector.get_columns("users")]
+            if "password_hash" not in columns:
+                with engine.begin() as conn:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN password_hash VARCHAR"))
+                print("Added password_hash column to users table.")
             print("Database connected and tables created!")
             break
         except OperationalError as e:

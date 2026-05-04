@@ -108,25 +108,25 @@ Implementação incremental das funcionalidades de cadastro de pets, listagem co
     - Testar exibição de mensagem de erro quando o serviço retorna erro
     - _Requisitos: 3.4, 3.5, 3.6_
 
-- [ ] 9. Completar o endpoint POST /applications e mover modelo para models.py
+- [x] 9. Completar o endpoint POST /applications e mover modelo para models.py
   - Mover a classe `AdoptionApplication` de `routers/applications.py` para `models.py`
   - Mover os schemas `ApplicationCreate` e `ApplicationResponse` para `schemas.py`
   - Verificar e ajustar a rota POST `/applications` para retornar HTTP 201
   - _Requisitos: 4.3, 4.4, 4.5, 4.8_
 
-  - [-] 9.1 Escrever testes unitários para POST /applications
+  - [x] 9.1 Escrever testes unitários para POST /applications
     - Testar criação com payload válido → status "New"
     - Testar criação com campo ausente → 422
     - Testar recuperação via GET /applications/user/{user_id}
     - _Requisitos: 4.4, 4.5, 4.8_
 
-  - [-] 9.2 Escrever teste de propriedade: Candidatura persiste com status "New"
+  - [x] 9.2 Escrever teste de propriedade: Candidatura persiste com status "New"
     - **Propriedade 4: Candidatura persiste com status inicial "New"**
     - **Valida: Requisitos 4.4, 4.8**
     - Usar `hypothesis` para gerar candidaturas válidas, criar via POST e recuperar via GET, verificar status "New" e presença na lista do usuário
     - Tag: `Feature: pet-adoption-core, Propriedade 4`
 
-- [~] 10. Checkpoint final — Garantir que todos os testes passam
+- [x] 10. Checkpoint final — Garantir que todos os testes passam
   - Garantir que todos os testes de backend e frontend passam, perguntar ao usuário se houver dúvidas.
 
 ## Notas

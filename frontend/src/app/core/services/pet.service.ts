@@ -27,6 +27,29 @@ export interface Pet {
   image_url?: string;
 }
 
+export interface PetCreate {
+  name: string;
+  species: string;
+  breed: string;
+  age_group: string;
+  age_description: string;
+  size: string;
+  sex: string;
+  color: string;
+  shelter_name: string;
+  city: string;
+  status: string;
+  description?: string;
+  is_vaccinated?: boolean;
+  is_neutered?: boolean;
+  good_with_kids?: boolean;
+  good_with_dogs?: boolean;
+  good_with_cats?: boolean;
+  apartment_friendly?: boolean;
+  first_time_owner_friendly?: boolean;
+  image_url?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -41,5 +64,9 @@ export class PetService {
 
   getPet(id: number): Observable<Pet> {
     return this.http.get<Pet>(`${this.apiUrl}/${id}`);
+  }
+
+  createPet(pet: PetCreate): Observable<Pet> {
+    return this.http.post<Pet>(this.apiUrl, pet);
   }
 }

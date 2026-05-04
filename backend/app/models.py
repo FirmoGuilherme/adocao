@@ -6,6 +6,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String, unique=True, index=True)
+    password_hash = Column(String, nullable=True)
     city = Column(String)
     state = Column(String)
     role = Column(String) # adopter, shelter, volunteer, admin
