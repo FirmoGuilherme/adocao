@@ -1,53 +1,42 @@
+version: "3.9"
 
 services:
-  db:
+  backend:
+    build: .
+    container_name: adocao_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    volumes:
+      - .:/app # To allow hot reload
+
+  postgres:
     image: postgres:16
     container_name: adocao_db
-    environment:
-      POSTGRES_USER: adocao_user
-      POSTGRES_PASSWORD: adocao_password
-      POSTGRES_DB: adocao_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - adocao_final_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U adocao_user -d adocao_db"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
     restart: always
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: adocao_backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - ./backend:/app
-    ports:
-      - "8001:8000"
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql://adocao_user:adocao_password@db:5432/adocao_db
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: adocao_frontend
-    command: npx ng serve --host 0.0.0.0 --disable-host-check
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      POSTGRES_DB: adocao
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "4200:4200"
-    depends_on:
-      - backend
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: adocao_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@adocao.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
 
 volumes:
-  adocao_final_data:
+  postgres_data:
