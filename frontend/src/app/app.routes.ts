@@ -22,6 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/dashboards/adopter-dashboard.component').then(m => m.AdopterDashboardComponent)
   },
   {
+    path: 'profile',
+    loadComponent: () => import('./pages/profile/profile.component').then(m => m.ProfileComponent)
+  },
+  {
     path: 'auth/login',
     loadComponent: () => import('./pages/auth/login.component').then(m => m.LoginComponent)
   },
@@ -48,5 +52,9 @@ export const routes: Routes = [
   {
     path: 'dashboard/admin',
     loadComponent: () => import('./pages/dashboards/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+  },
+  {
+    path: 'dashboard/volunteer',
+    loadComponent: () => import('./pages/dashboards/volunteer-dashboard.component').then(m => m.VolunteerDashboardComponent)
   }
 ];

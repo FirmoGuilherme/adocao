@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, RouterModule, Router } from '@angular/router';
+import { AuthService, User } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule],
+  imports: [CommonModule, RouterOutlet, RouterModule],
   template: `
     <div class="min-h-screen flex flex-col bg-background">
       <nav class="bg-surface shadow-soft sticky top-0 z-50">
@@ -15,10 +17,47 @@ import { RouterOutlet, RouterModule } from '@angular/router';
               <span class="font-bold text-xl tracking-tight text-gray-900">Adoção</span>
             </div>
             <div class="hidden md:flex items-center space-x-6">
-              <a routerLink="/explore" class="text-gray-600 hover:text-primary transition-colors font-medium">Explorar Pets</a>
-              <a routerLink="/education" class="text-gray-600 hover:text-primary transition-colors font-medium">Academia</a>
-              <a routerLink="/auth/login" class="text-gray-600 hover:text-primary transition-colors font-medium">Entrar</a>
-              <a routerLink="/auth/signup" class="btn-primary pointer">Cadastrar</a>
+
+              <!-- Not logged in -->
+              <ng-container *ngIf="!currentUser">
+                <a routerLink="/explore" class="text-gray-600 hover:text-primary transition-colors font-medium">Explorar Pets</a>
+                <a routerLink="/education" class="text-gray-600 hover:text-primary transition-colors font-medium">Academia</a>
+                <a routerLink="/auth/login" class="text-gray-600 hover:text-primary transition-colors font-medium">Entrar</a>
+                <a routerLink="/auth/signup" class="btn-primary pointer">Cadastrar</a>
+              </ng-container>
+
+              <!-- Logged in as adopter -->
+              <ng-container *ngIf="currentUser?.role === 'adopter'">
+                <a routerLink="/explore" class="text-gray-600 hover:text-primary transition-colors font-medium">Explorar Pets</a>
+                <a routerLink="/profile" class="text-gray-600 hover:text-primary transition-colors font-medium">Meu Perfil</a>
+                <a routerLink="/dashboard/adopter" class="text-gray-600 hover:text-primary transition-colors font-medium">Meu Painel</a>
+                <span class="text-sm text-gray-500">Olá, {{currentUser?.name}}</span>
+                <button (click)="logout()" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">Sair</button>
+              </ng-container>
+
+              <!-- Logged in as shelter/ONG -->
+              <ng-container *ngIf="currentUser?.role === 'shelter'">
+                <a routerLink="/dashboard/shelter" class="text-gray-600 hover:text-primary transition-colors font-medium">Meu Painel</a>
+                <a routerLink="/dashboard/shelter/add-pet" class="text-gray-600 hover:text-primary transition-colors font-medium">Cadastrar Pet</a>
+                <span class="text-sm text-gray-500">🏢 {{currentUser?.name}}</span>
+                <button (click)="logout()" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">Sair</button>
+              </ng-container>
+
+              <!-- Logged in as admin -->
+              <ng-container *ngIf="currentUser?.role === 'admin'">
+                <a routerLink="/dashboard/admin" class="text-gray-600 hover:text-primary transition-colors font-medium">Painel Admin</a>
+                <span class="text-sm text-gray-500">{{currentUser?.name}}</span>
+                <button (click)="logout()" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">Sair</button>
+              </ng-container>
+
+              <!-- Logged in as volunteer -->
+              <ng-container *ngIf="currentUser?.role === 'volunteer'">
+                <a routerLink="/dashboard/volunteer" class="text-gray-600 hover:text-primary transition-colors font-medium">Abrigos</a>
+                <a routerLink="/profile" class="text-gray-600 hover:text-primary transition-colors font-medium">Meu Perfil</a>
+                <span class="text-sm text-gray-500">🤝 {{currentUser?.name}}</span>
+                <button (click)="logout()" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">Sair</button>
+              </ng-container>
+
             </div>
           </div>
         </div>
@@ -50,7 +89,6 @@ import { RouterOutlet, RouterModule } from '@angular/router';
             <ul class="space-y-2 text-sm">
               <li><a routerLink="/education" class="hover:text-primary">Guia de Adoção</a></li>
               <li><a routerLink="/education" class="hover:text-primary">Cuidados com Pets</a></li>
-              <li><a href="#" class="hover:text-primary">Abrigos perto de mim</a></li>
             </ul>
           </div>
           <div>
@@ -65,6 +103,23 @@ import { RouterOutlet, RouterModule } from '@angular/router';
     </div>
   `
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'adocao-frontend';
+  currentUser: User | null = null;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
 }

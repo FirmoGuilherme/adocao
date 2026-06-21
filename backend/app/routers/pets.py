@@ -41,3 +41,35 @@ def get_pet(pet_id: int, db: Session = Depends(get_db)):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     return pet
+
+
+@router.delete("/{pet_id}", status_code=204)
+def delete_pet(pet_id: int, db: Session = Depends(get_db)):
+    pet = db.query(models.Pet).filter(models.Pet.id == pet_id).first()
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    db.delete(pet)
+    db.commit()
+    return None
+
+
+@router.put("/{pet_id}/image")
+def update_pet_image(pet_id: int, body: dict, db: Session = Depends(get_db)):
+    pet = db.query(models.Pet).filter(models.Pet.id == pet_id).first()
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    pet.image_url = body.get("image_url", "")
+    db.commit()
+    db.refresh(pet)
+    return {"image_url": pet.image_url}
+
+
+@router.put("/{pet_id}/status")
+def update_pet_status(pet_id: int, status: str, db: Session = Depends(get_db)):
+    pet = db.query(models.Pet).filter(models.Pet.id == pet_id).first()
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    pet.status = status
+    db.commit()
+    db.refresh(pet)
+    return {"status": pet.status}

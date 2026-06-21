@@ -81,7 +81,7 @@ import { PetService, Pet } from '../../core/services/pet.service';
             
             <div *ngFor="let pet of pets" class="card group flex flex-col h-full bg-surface hover:shadow-float cursor-pointer" [routerLink]="['/pets', pet.id]">
               <div class="relative h-48 w-full bg-gray-200 overflow-hidden">
-                <img [src]="pet.image_url || (pet.species === 'dog' ? 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80' : 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80')" 
+                <img [src]="getPetImageUrl(pet)" 
                      [alt]="pet.name" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
                 
                 <div class="absolute top-2 right-2 flex flex-col gap-1">
@@ -147,7 +147,8 @@ export class ExploreComponent implements OnInit {
 
     this.petService.getPets(activeFilters).subscribe({
       next: (data) => {
-        this.pets = data;
+        // Only show available pets in the explore page
+        this.pets = data.filter(p => p.status === 'Available');
         this.loading = false;
       },
       error: (err) => {
@@ -171,5 +172,15 @@ export class ExploreComponent implements OnInit {
   translateStatus(status: string): string {
     const map: Record<string, string> = { Available: 'Disponível', Reserved: 'Reservado', Adopted: 'Adotado' };
     return map[status] || status;
+  }
+
+  getPetImageUrl(pet: Pet): string {
+    if (pet.image_url) {
+      if (pet.image_url.startsWith('http')) return pet.image_url;
+      return 'http://localhost:8000' + pet.image_url;
+    }
+    return pet.species === 'dog'
+      ? 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80'
+      : 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80';
   }
 }

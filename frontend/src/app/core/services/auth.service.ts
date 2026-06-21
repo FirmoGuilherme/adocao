@@ -10,6 +10,7 @@ export interface User {
   state: string;
   role: string;
   avatar?: string;
+  approved?: boolean;
 }
 
 @Injectable({

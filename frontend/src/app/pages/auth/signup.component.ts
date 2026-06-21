@@ -70,15 +70,65 @@ import { AuthService } from '../../core/services/auth.service';
                {{ error }}
              </div>
              <div *ngIf="success" class="bg-green-50 text-green-700 p-3 rounded-lg text-sm text-center mb-4">
-               Conta criada com sucesso! Redirecionando...
+               {{selectedRole === 'shelter' ? 'Cadastro enviado! Seus dados serão analisados pelo admin. Você receberá acesso após aprovação.' : 'Conta criada com sucesso! Redirecionando...'}}
              </div>
 
              <form class="space-y-4" (ngSubmit)="onSubmit()">
                <div>
-                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">{{selectedRole === 'shelter' ? 'Nome da ONG / Abrigo' : 'Nome Completo'}}</label>
                  <input id="name" name="name" type="text" required [(ngModel)]="name"
-                   class="input-field py-2" placeholder="Seu nome completo">
+                   class="input-field py-2" [placeholder]="selectedRole === 'shelter' ? 'Nome oficial da organização' : 'Seu nome completo'">
                </div>
+
+               <!-- Campos específicos ONG -->
+               <ng-container *ngIf="selectedRole === 'shelter'">
+                 <div>
+                   <label class="block text-sm font-medium text-gray-700 mb-1">CNPJ <span class="text-red-500">*</span></label>
+                   <input name="cnpj" type="text" required [(ngModel)]="shelterData.cnpj"
+                     class="input-field py-2" placeholder="00.000.000/0000-00" maxlength="18">
+                 </div>
+                 <div>
+                   <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Responsável Legal <span class="text-red-500">*</span></label>
+                   <input name="responsible_name" type="text" required [(ngModel)]="shelterData.responsible_name"
+                     class="input-field py-2" placeholder="Nome completo do responsável">
+                 </div>
+                 <div>
+                   <label class="block text-sm font-medium text-gray-700 mb-1">CPF do Responsável <span class="text-red-500">*</span></label>
+                   <input name="responsible_cpf" type="text" required [(ngModel)]="shelterData.responsible_cpf"
+                     class="input-field py-2" placeholder="000.000.000-00" maxlength="14">
+                 </div>
+                 <div>
+                   <label class="block text-sm font-medium text-gray-700 mb-1">Telefone / WhatsApp <span class="text-red-500">*</span></label>
+                   <input name="phone" type="tel" required [(ngModel)]="shelterData.phone"
+                     class="input-field py-2" placeholder="(47) 99999-9999">
+                 </div>
+                 <div>
+                   <label class="block text-sm font-medium text-gray-700 mb-1">Endereço Completo <span class="text-red-500">*</span></label>
+                   <input name="address" type="text" required [(ngModel)]="shelterData.address"
+                     class="input-field py-2" placeholder="Rua, número, bairro">
+                 </div>
+                 <div class="grid grid-cols-2 gap-4">
+                   <div>
+                     <label class="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                     <input name="zip_code" type="text" [(ngModel)]="shelterData.zip_code"
+                       class="input-field py-2" placeholder="89000-000" maxlength="9">
+                   </div>
+                   <div>
+                     <label class="block text-sm font-medium text-gray-700 mb-1">Capacidade de Animais</label>
+                     <input name="capacity" type="number" [(ngModel)]="shelterData.capacity"
+                       class="input-field py-2" placeholder="50" min="1">
+                   </div>
+                 </div>
+                 <div>
+                   <label class="block text-sm font-medium text-gray-700 mb-1">Descrição da ONG</label>
+                   <textarea name="description" [(ngModel)]="shelterData.description" rows="2"
+                     class="input-field py-2" placeholder="Descreva brevemente a missão e atividades da sua organização..."></textarea>
+                 </div>
+                 <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-xs text-yellow-800">
+                   ⚠️ O cadastro de abrigos passa por aprovação do administrador da plataforma. Você receberá acesso após a validação dos dados.
+                 </div>
+               </ng-container>
+
                <div>
                  <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                  <input id="email" name="email" type="email" required [(ngModel)]="email"
@@ -135,6 +185,17 @@ export class SignupComponent {
   error = '';
   success = false;
 
+  shelterData = {
+    cnpj: '',
+    responsible_name: '',
+    responsible_cpf: '',
+    phone: '',
+    address: '',
+    zip_code: '',
+    capacity: null as number | null,
+    description: ''
+  };
+
   constructor(private authService: AuthService, private router: Router) {}
 
   selectRole(role: string) {
@@ -146,6 +207,13 @@ export class SignupComponent {
     if (!this.name || !this.email || !this.password || !this.city || !this.state) {
       this.error = 'Por favor, preencha todos os campos.';
       return;
+    }
+    if (this.selectedRole === 'shelter') {
+      if (!this.shelterData.cnpj || !this.shelterData.responsible_name ||
+          !this.shelterData.responsible_cpf || !this.shelterData.phone || !this.shelterData.address) {
+        this.error = 'Por favor, preencha todos os campos obrigatórios da ONG (CNPJ, responsável, telefone, endereço).';
+        return;
+      }
     }
     if (this.password.length < 6) {
       this.error = 'A senha deve ter no mínimo 6 caracteres.';
@@ -171,13 +239,16 @@ export class SignupComponent {
         this.loading = false;
         setTimeout(() => {
           if (this.selectedRole === 'adopter') {
-            this.router.navigate(['/explore']);
+            this.router.navigate(['/profile']);
           } else if (this.selectedRole === 'shelter') {
-            this.router.navigate(['/dashboard/shelter']);
+            // Shelter needs approval, redirect to landing
+            this.router.navigate(['/']);
+          } else if (this.selectedRole === 'volunteer') {
+            this.router.navigate(['/profile']);
           } else {
             this.router.navigate(['/']);
           }
-        }, 1500);
+        }, 2500);
       },
       error: (err) => {
         this.loading = false;

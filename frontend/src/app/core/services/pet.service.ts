@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { timeout } from 'rxjs/operators';
+import { PetHealthRecord, PetTemperament, PetMedia } from '../models/pet-details.models';
 
 // Mock models matching the backend schemas
 export interface Pet {
@@ -55,6 +57,7 @@ export interface PetCreate {
 })
 export class PetService {
   private apiUrl = 'http://localhost:8000/pets';
+  private readonly TIMEOUT_MS = 10000;
 
   constructor(private http: HttpClient) {}
 
@@ -68,5 +71,37 @@ export class PetService {
 
   createPet(pet: PetCreate): Observable<Pet> {
     return this.http.post<Pet>(this.apiUrl, pet);
+  }
+
+  getHealthRecord(petId: number): Observable<PetHealthRecord> {
+    return this.http.get<PetHealthRecord>(`${this.apiUrl}/${petId}/health`).pipe(
+      timeout(this.TIMEOUT_MS)
+    );
+  }
+
+  getTemperament(petId: number): Observable<PetTemperament> {
+    return this.http.get<PetTemperament>(`${this.apiUrl}/${petId}/temperament`).pipe(
+      timeout(this.TIMEOUT_MS)
+    );
+  }
+
+  getMedia(petId: number): Observable<PetMedia[]> {
+    return this.http.get<PetMedia[]>(`${this.apiUrl}/${petId}/media`).pipe(
+      timeout(this.TIMEOUT_MS)
+    );
+  }
+
+  uploadMedia(petId: number, file: File): Observable<PetMedia> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<PetMedia>(`${this.apiUrl}/${petId}/media`, formData).pipe(
+      timeout(this.TIMEOUT_MS)
+    );
+  }
+
+  deleteMedia(petId: number, mediaId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${petId}/media/${mediaId}`).pipe(
+      timeout(this.TIMEOUT_MS)
+    );
   }
 }

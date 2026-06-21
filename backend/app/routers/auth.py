@@ -40,6 +40,11 @@ def signup(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
 
     user_data = user_in.model_dump(exclude={"password"})
     user_data["password_hash"] = hash_password(user_in.password)
+    # Shelters require admin approval
+    if user_data.get("role") == "shelter":
+        user_data["approved"] = False
+    else:
+        user_data["approved"] = True
 
     new_user = models.User(**user_data)
     db.add(new_user)

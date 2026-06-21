@@ -79,6 +79,8 @@ export class LoginComponent {
           this.router.navigate(['/dashboard/shelter']);
         } else if (user.role === 'admin') {
           this.router.navigate(['/dashboard/admin']);
+        } else if (user.role === 'volunteer') {
+          this.router.navigate(['/dashboard/volunteer']);
         } else {
           this.router.navigate(['/dashboard/adopter']);
         }

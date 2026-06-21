@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationService } from '../../core/services/application.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-apply',
@@ -101,7 +102,7 @@ export class ApplyComponent implements OnInit {
   errorMessage = '';
   application = { housing_type: '', motivation: '' };
 
-  constructor(private route: ActivatedRoute, private router: Router, private applicationService: ApplicationService) {}
+  constructor(private route: ActivatedRoute, private router: Router, private applicationService: ApplicationService, private authService: AuthService) {}
 
   ngOnInit() { this.petId = Number(this.route.snapshot.paramMap.get('id')); }
 
@@ -116,7 +117,7 @@ export class ApplyComponent implements OnInit {
     this.errorMessage = '';
 
     this.applicationService.createApplication({
-      user_id: 1, pet_id: this.petId!,
+      user_id: this.authService.currentUserValue?.id || 0, pet_id: this.petId!,
       housing_type: this.application.housing_type,
       motivation: this.application.motivation
     }).subscribe({

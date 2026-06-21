@@ -6,6 +6,17 @@ from .. import models, schemas
 
 router = APIRouter(prefix="/shelters", tags=["shelters"])
 
+
+@router.get("/")
+def list_shelters(db: Session = Depends(get_db)):
+    """List all registered shelters."""
+    shelters = db.query(models.User).filter(models.User.role == "shelter").all()
+    return [
+        {"id": s.id, "name": s.name, "email": s.email, "city": s.city, "state": s.state}
+        for s in shelters
+    ]
+
+
 @router.get("/{shelter_id}/stats")
 def get_shelter_stats(shelter_id: int, db: Session = Depends(get_db)):
     shelter = db.query(models.User).filter(models.User.id == shelter_id, models.User.role == "shelter").first()
