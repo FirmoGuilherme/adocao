@@ -75,6 +75,12 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: (user) => {
         this.loading = false;
+        // Block unapproved shelters
+        if (user.role === 'shelter' && user.approved === false) {
+          this.error = 'Seu cadastro de abrigo ainda está aguardando aprovação do administrador. Tente novamente mais tarde.';
+          this.authService.logout();
+          return;
+        }
         if (user.role === 'shelter') {
           this.router.navigate(['/dashboard/shelter']);
         } else if (user.role === 'admin') {
