@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
                 <span class="block text-primary">com responsabilidade.</span>
               </h1>
               <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                A Adoção conecta adotantes, abrigos e pets resgatados para adoções mais seguras e compatíveis. Acreditamos que todo pet merece um lar perfeito.
+                A AdoCão conecta adotantes, abrigos e pets resgatados para adoções mais seguras e compatíveis. Acreditamos que todo pet merece um lar perfeito.
               </p>
               <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div class="rounded-md shadow">

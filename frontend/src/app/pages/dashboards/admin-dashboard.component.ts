@@ -31,7 +31,7 @@ interface Stats {
       <nav class="bg-gray-900 text-white py-4 px-6 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-2">
            <span class="text-primary text-2xl">🐶</span>
-           <span class="font-bold text-xl tracking-tight">Adoção Admin</span>
+           <span class="font-bold text-xl tracking-tight">AdoCão Admin</span>
         </div>
         <div class="flex gap-4 items-center">
            <span *ngIf="stats.pending_shelters > 0" class="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">

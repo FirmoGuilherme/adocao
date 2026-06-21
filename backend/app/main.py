@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from .database import get_engine
+from .database import get_engine, get_session_local
 from . import models
 
 app = FastAPI(title="Adocão API", description="API for Adocão SaaS MVP")
@@ -56,6 +56,28 @@ def on_startup():
                     conn.execute(text("ALTER TABLE users ADD COLUMN approved BOOLEAN DEFAULT TRUE"))
                     conn.execute(text("UPDATE users SET approved = TRUE"))
                 print("Added approved column to users table.")
+
+            # Seed admin user if not exists
+            import bcrypt
+            DbSession = get_session_local()
+            db = DbSession()
+            admin_exists = db.query(models.User).filter(models.User.role == "admin").first()
+            if not admin_exists:
+                admin_hash = bcrypt.hashpw(b"admin123", bcrypt.gensalt()).decode("utf-8")
+                admin_user = models.User(
+                    name="admin",
+                    email="admin@adocao.com",
+                    city="Brasil",
+                    state="BR",
+                    role="admin",
+                    password_hash=admin_hash,
+                    approved=True
+                )
+                db.add(admin_user)
+                db.commit()
+                print("Admin user seeded: admin@adocao.com / admin123")
+            db.close()
+
             print("Database connected and tables created!")
             break
         except OperationalError as e:

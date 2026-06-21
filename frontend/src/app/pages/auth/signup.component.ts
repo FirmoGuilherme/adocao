@@ -15,7 +15,7 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="grid grid-cols-1 md:grid-cols-2">
            
            <div class="bg-primary text-white p-12 flex flex-col justify-center">
-             <h2 class="text-4xl font-extrabold mb-4">Junte-se à Adoção</h2>
+             <h2 class="text-4xl font-extrabold mb-4">Junte-se à AdoCão</h2>
              <p class="text-lg opacity-90 mb-8">Escolha como você quer fazer parte da nossa comunidade. Juntos podemos encontrar lares para milhares de pets.</p>
              <div class="space-y-4">
                <div class="flex items-center space-x-3"><span class="text-2xl">🐾</span> <span>Salve vidas</span></div>

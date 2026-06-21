@@ -14,7 +14,7 @@ import { AuthService, User } from './core/services/auth.service';
           <div class="flex justify-between h-16">
             <div class="flex items-center space-x-2 cursor-pointer" routerLink="/">
               <span class="text-primary text-2xl">🐶</span>
-              <span class="font-bold text-xl tracking-tight text-gray-900">Adoção</span>
+              <span class="font-bold text-xl tracking-tight text-gray-900">AdoCão</span>
             </div>
             <div class="hidden md:flex items-center space-x-6">
 
@@ -72,7 +72,7 @@ import { AuthService, User } from './core/services/auth.service';
           <div>
             <div class="flex items-center space-x-2 text-white mb-4">
               <span class="text-2xl">🐶</span>
-              <span class="font-bold text-xl tracking-tight">Adoção</span>
+              <span class="font-bold text-xl tracking-tight">AdoCão</span>
             </div>
             <p class="text-sm">Conectando adotantes, abrigos e pets resgatados para adoções mais seguras e compatíveis.</p>
           </div>
